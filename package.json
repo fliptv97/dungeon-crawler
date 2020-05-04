@@ -11,5 +11,5 @@
     "start": "node index.js"
   },
   "author": "Philip Kazakov",
-  "license": "ISC"
+  "license": "MIT"
 }
