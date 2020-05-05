@@ -3,6 +3,17 @@ class Vector2D {
     return new Vector2D(Math.cos(angle), Math.sin(angle));
   }
 
+  static sum(v1, v2) {
+    if (v1 instanceof Vector2D && v2 instanceof Vector2D) {
+      return {
+        x: v1.x + v2.x,
+        y: v1.y + v2.y
+      }
+    }
+
+    return new Error('v1 or v2 isn\'t instance of Vector2D');
+  }
+
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -40,9 +51,7 @@ class Vector2D {
   }
 
   heading() {
-    let heading = Math.atan2(this.x, this.y);
-
-    return heading;
+    return Math.atan2(this.x, this.y);
   }
 
   distance(vector) {

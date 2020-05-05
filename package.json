@@ -1,12 +1,14 @@
 {
   "name": "dungeon-crawler-game",
   "version": "0.0.1",
-  "description": "First attemp to create dungeon crawler on JS",
+  "description": "First attempt to create dungeon crawler on JS",
   "main": "index.js",
   "dependencies": {
     "express": "^4.17.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "prettier": "^2.0.5"
+  },
   "scripts": {
     "start": "node index.js"
   },
