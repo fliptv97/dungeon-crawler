@@ -1,5 +1,5 @@
 class LevelMap {
-  TILE_SIZE = 32;
+  static TILE_SIZE = 32;
 
   constructor(renderer) {
     this.grid = [
@@ -15,8 +15,8 @@ class LevelMap {
       ["#", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", ".", "#"],
       ["#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#", "#"],
     ];
-    this.width = this.grid[0].length * this.TILE_SIZE;
-    this.height = this.grid.length * this.TILE_SIZE;
+    this.width = this.grid[0].length * LevelMap.TILE_SIZE;
+    this.height = this.grid.length * LevelMap.TILE_SIZE;
 
     this.renderer = renderer;
   }
@@ -26,21 +26,25 @@ class LevelMap {
       return true;
     }
 
-    let gridIndexX = Math.floor(x / this.TILE_SIZE);
-    let gridIndexY = Math.floor(y / this.TILE_SIZE);
+    let gridIndexX = Math.floor(x / LevelMap.TILE_SIZE);
+    let gridIndexY = Math.floor(y / LevelMap.TILE_SIZE);
 
     return this.grid[gridIndexY][gridIndexX] === "#";
   }
 
   render(withGrid) {
+    let mapGroupEl = this.renderer.createElement(null, Renderer.TYPES.GROUP, {
+      id: "map",
+    });
+
     for (let y = 0; y < this.grid.length; y++) {
       for (let x = 0; x < this.grid[y].length; x++) {
         if (this.grid[y][x] === "#") {
-          this.renderer.createElement(null, Renderer.TYPES.RECTANGLE, {
-            x: x * this.TILE_SIZE,
-            y: y * this.TILE_SIZE,
-            width: this.TILE_SIZE,
-            height: this.TILE_SIZE,
+          this.renderer.createElement(mapGroupEl, Renderer.TYPES.RECTANGLE, {
+            x: x * LevelMap.TILE_SIZE,
+            y: y * LevelMap.TILE_SIZE,
+            width: LevelMap.TILE_SIZE,
+            height: LevelMap.TILE_SIZE,
             fill: "rgb(100, 100, 100)",
           });
         }
@@ -56,19 +60,19 @@ class LevelMap {
       for (let y = 0; y < this.grid.length; y++) {
         this.renderer.createElement(gridGroup, Renderer.TYPES.LINE, {
           x1: 0,
-          y1: y * this.TILE_SIZE,
-          x2: this.renderer.getWidth(),
-          y2: y * this.TILE_SIZE,
+          y1: y * LevelMap.TILE_SIZE,
+          x2: this.renderer.width,
+          y2: y * LevelMap.TILE_SIZE,
           style: styles,
         });
       }
 
       for (let x = 0; x < this.grid[0].length; x++) {
         this.renderer.createElement(gridGroup, Renderer.TYPES.LINE, {
-          x1: x * this.TILE_SIZE,
+          x1: x * LevelMap.TILE_SIZE,
           y1: 0,
-          x2: x * this.TILE_SIZE,
-          y2: this.renderer.getHeight(),
+          x2: x * LevelMap.TILE_SIZE,
+          y2: this.renderer.height,
           style: styles,
         });
       }

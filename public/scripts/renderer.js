@@ -22,11 +22,11 @@ class Renderer {
     this._container = null;
   }
 
-  getWidth() {
+  get width() {
     return this._width;
   }
 
-  getHeight() {
+  get height() {
     return this._height;
   }
 
@@ -34,11 +34,11 @@ class Renderer {
     this._container.setAttribute("style", `background-color: ${color};`);
   }
 
-  init(width, height) {
+  init(width, height, id) {
     this._width = width;
     this._height = height;
     this._container = this.createElement(document.body, "svg", {
-      id: "top-view",
+      id,
       width,
       height,
     });

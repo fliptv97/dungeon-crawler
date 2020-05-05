@@ -16,8 +16,16 @@ class Ray {
     this._isRayFacingLeft = !this._isRayFacingRight;
   }
 
+  get angle() {
+    return this._angle;
+  }
+
+  get distance() {
+    return this._distance;
+  }
+
   cast() {
-    let tileSize = this._levelMap.TILE_SIZE;
+    let tileSize = LevelMap.TILE_SIZE;
 
     let xIntercept;
     let yIntercept;

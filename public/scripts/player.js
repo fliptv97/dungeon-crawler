@@ -13,14 +13,28 @@ class Player {
     this._rotationAngle = 0;
     this._el = null;
     this._raysGroupEl = null;
+    this._rays = [];
+    this._callbacks = [];
+  }
+
+  get fov() {
+    return this._fov;
+  }
+
+  get rotationAngle() {
+    return this._rotationAngle;
+  }
+
+  get rays() {
+    return this._rays;
   }
 
   initControlsListener() {
     document.addEventListener("keydown", (e) => {
       if (e.code === UP_ARROW) {
-        this.move(this._levelMap.TILE_SIZE);
+        this.move(LevelMap.TILE_SIZE);
       } else if (e.code === DOWN_ARROW) {
-        this.move(-this._levelMap.TILE_SIZE);
+        this.move(-LevelMap.TILE_SIZE);
       } else if (e.code === LEFT_ARROW) {
         this.rotate(-90);
       } else if (e.code === RIGHT_ARROW) {
@@ -29,10 +43,21 @@ class Player {
     });
   }
 
+  onUpdate(cb) {
+    this._callbacks.push(cb);
+  }
+
+  _triggerCallbacks() {
+    this._callbacks.forEach((cb) => {
+      cb();
+    });
+  }
+
   rotate(angle) {
     this._rotationAngle += degreesToRadians(angle);
 
     this._renderRays();
+    this._triggerCallbacks();
   }
 
   move(length) {
@@ -50,15 +75,17 @@ class Player {
     this._el.setAttribute("cy", this._position.y);
 
     this._renderRays();
+    this._triggerCallbacks();
   }
 
   _renderRays() {
+    this._rays = [];
     this._raysGroupEl.innerHTML = "";
 
     for (
       let i = 0, rayAngle = this._rotationAngle - this._fov / 2;
-      i < 60;
-      i++, rayAngle += this._fov / 60
+      i < radiansToDegrees(this._fov);
+      i++, rayAngle += this._fov / radiansToDegrees(this._fov)
     ) {
       let ray = new Ray(
         this._levelMap,
@@ -69,6 +96,8 @@ class Player {
 
       ray.cast();
       ray.render(this._raysGroupEl);
+
+      this._rays.push(ray);
     }
   }
 
