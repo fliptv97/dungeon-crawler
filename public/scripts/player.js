@@ -10,8 +10,9 @@ class Player {
     this._position = new Vector2D(x, y);
     this._fov = degreesToRadians(fov);
 
-    this._rotationAngle = Math.PI / 2;
+    this._rotationAngle = 0;
     this._el = null;
+    this._raysGroupEl = null;
   }
 
   initControlsListener() {
@@ -52,11 +53,7 @@ class Player {
   }
 
   _renderRays() {
-    Renderer.removeElement("rays");
-
-    let raysGroupEl = this._renderer.createElement(null, Renderer.TYPES.GROUP, {
-      id: "rays",
-    });
+    this._raysGroupEl.innerHTML = "";
 
     for (
       let i = 0, rayAngle = this._rotationAngle - this._fov / 2;
@@ -71,16 +68,24 @@ class Player {
       );
 
       ray.cast();
-      ray.render(raysGroupEl);
+      ray.render(this._raysGroupEl);
     }
   }
 
   render() {
+    this._raysGroupEl = this._renderer.createElement(
+      null,
+      Renderer.TYPES.GROUP,
+      {
+        id: "rays",
+      }
+    );
+
     this._el = this._renderer.createElement(null, Renderer.TYPES.CIRCLE, {
       cx: this._position.x,
       cy: this._position.y,
       r: 5,
-      fill: "#FFF",
+      fill: "#00F",
     });
 
     this._renderRays();

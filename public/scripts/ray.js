@@ -14,8 +14,6 @@ class Ray {
     this._isRayFacingRight =
       this._angle < 0.5 * Math.PI || this._angle > 1.5 * Math.PI;
     this._isRayFacingLeft = !this._isRayFacingRight;
-
-    console.log(angle, this);
   }
 
   cast() {
@@ -146,7 +144,7 @@ class Ray {
       y1: this._position.y,
       x2: this._wallHitX,
       y2: this._wallHitY,
-      style: "stroke-width: 1; stroke: #FFF;",
+      style: "stroke-width: 1; stroke-opacity: 0.5; stroke: #FFF;",
     });
 
     return this._el;
