@@ -5,8 +5,16 @@ class Renderer {
     GROUP: "g",
     RECTANGLE: "rect",
     CIRCLE: "circle",
-    LINE: "line"
+    LINE: "line",
   };
+
+  static removeElement(id) {
+    let el = document.querySelector(`#${id}`);
+
+    if (!el) return;
+
+    el.parentNode.removeChild(el);
+  }
 
   constructor() {
     this._width = null;
@@ -32,7 +40,7 @@ class Renderer {
     this._container = this.createElement(document.body, "svg", {
       id: "top-view",
       width,
-      height
+      height,
     });
   }
 
@@ -47,13 +55,5 @@ class Renderer {
     else this._container.appendChild(el);
 
     return el;
-  }
-
-  removeElement(id) {
-    let el = document.querySelector(`#${id}`);
-
-    if (!el) return;
-
-    el.parentNode.removeChild(el);
   }
 }

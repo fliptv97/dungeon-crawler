@@ -7,11 +7,11 @@ class Vector2D {
     if (v1 instanceof Vector2D && v2 instanceof Vector2D) {
       return {
         x: v1.x + v2.x,
-        y: v1.y + v2.y
-      }
+        y: v1.y + v2.y,
+      };
     }
 
-    return new Error('v1 or v2 isn\'t instance of Vector2D');
+    return new Error("v1 or v2 isn't instance of Vector2D");
   }
 
   constructor(x, y) {
