@@ -59,7 +59,9 @@ class Player {
   }
 
   rotate(angle) {
-    this._rotationAngle += degreesToRadians(angle);
+    this._rotationAngle = normalizeAngle(
+      this._rotationAngle + degreesToRadians(angle)
+    );
 
     this._renderRays();
     this._triggerCallbacks();
