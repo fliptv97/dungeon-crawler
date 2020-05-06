@@ -64,13 +64,14 @@ class Scene {
         enemy.position.x,
         enemy.position.y
       );
-      let angle =
-        Math.atan2(
-          enemy.position.y - this._level.player.position.y,
-          enemy.position.x - this._level.player.position.x
-        ) - this._level.player.rotationAngle;
+      let angle = Math.atan2(
+        enemy.position.y - this._level.player.position.y,
+        enemy.position.x - this._level.player.position.x
+      );
 
-      let fixedDistance = distance * Math.cos(normalizeAngle(angle));
+      angle = normalizeAngle(angle) - this._level.player.rotationAngle;
+
+      let fixedDistance = distance * Math.cos(angle);
       let distanceProjectionPlane =
         this._renderer.width / 2 / Math.tan(this._level.player.fov / 2);
       let height =
@@ -82,9 +83,6 @@ class Scene {
         0,
         this._renderer.width
       );
-
-      // eslint-disable-next-line no-console
-      console.log(angle, x);
 
       let color = map(Math.pow(fixedDistance, 2), 0, area, 240, 0);
 

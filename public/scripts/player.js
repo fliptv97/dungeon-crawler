@@ -11,7 +11,7 @@ class Player {
     this._raysCount = raysCount;
     this._fov = degreesToRadians(fov);
 
-    this._rotationAngle = -Math.PI / 2;
+    this._rotationAngle = Math.PI * 2 - Math.PI / 2;
     this._el = null;
     this._raysGroupEl = null;
     this._rays = [];
