@@ -3,6 +3,13 @@ class Vector2D {
     return new Vector2D(Math.cos(angle), Math.sin(angle));
   }
 
+  static distance(x1, y1, x2, y2) {
+    let v1 = new Vector2D(x1, y1);
+    let v2 = new Vector2D(x2, y2);
+
+    return v2.subtract(v1).getMagnitude();
+  }
+
   static sum(v1, v2) {
     if (v1 instanceof Vector2D && v2 instanceof Vector2D) {
       return {

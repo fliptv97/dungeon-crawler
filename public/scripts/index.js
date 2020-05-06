@@ -1,31 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // MINIMAP
   let mapRenderer = new Renderer();
-  let sceneRenderer = new Renderer();
-  let levelMap = new LevelMap(mapRenderer);
-  let player = new Player(
-    mapRenderer,
-    levelMap,
-    LevelMap.TILE_SIZE + LevelMap.TILE_SIZE / 2,
-    LevelMap.TILE_SIZE + LevelMap.TILE_SIZE / 2
-  );
-  let levelView = new Scene(sceneRenderer, player);
+  let level = new Level(mapRenderer);
 
-  let width = levelMap.width;
-  let height = levelMap.height;
-
-  mapRenderer.init(width, height, "minimap-container");
+  mapRenderer.init(level.width, level.height, "minimap-container");
   mapRenderer.setBackgroundColor("#000");
+
+  level.render(true);
+
+  // SCENE
+  let sceneRenderer = new Renderer();
+  let scene = new Scene(sceneRenderer, level);
 
   sceneRenderer.init(640, 480, "scene-container");
   sceneRenderer.setBackgroundColor("#000");
 
-  levelMap.render(true);
-  player.render();
-  levelView.render();
+  scene.render();
 
-  // Listeners
-  player.initControlsListener();
-  player.onUpdate(() => {
-    levelView.render();
+  // LISTENERS
+  level.player.initControlsListener();
+  level.player.onUpdate(() => {
+    scene.render();
   });
 });

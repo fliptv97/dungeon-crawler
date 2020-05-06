@@ -7,10 +7,10 @@ function radiansToDegrees(radians) {
 }
 
 function normalizeAngle(angle) {
-  let tempAngle = angle % (2 * Math.PI);
+  let tempAngle = angle; // % (2 * Math.PI);
 
   if (angle < 0) {
-    tempAngle = 2 * Math.PI + angle;
+    tempAngle += 2 * Math.PI;
   }
 
   return tempAngle;

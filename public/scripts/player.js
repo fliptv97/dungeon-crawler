@@ -4,17 +4,22 @@ const LEFT_ARROW = "ArrowLeft";
 const RIGHT_ARROW = "ArrowRight";
 
 class Player {
-  constructor(renderer, levelMap, x, y, fov = 60) {
+  constructor(renderer, level, x, y, raysCount = 320, fov = 60) {
     this._renderer = renderer;
-    this._levelMap = levelMap;
+    this._level = level;
     this._position = new Vector2D(x, y);
+    this._raysCount = raysCount;
     this._fov = degreesToRadians(fov);
 
-    this._rotationAngle = 0;
+    this._rotationAngle = -Math.PI / 2;
     this._el = null;
     this._raysGroupEl = null;
     this._rays = [];
     this._callbacks = [];
+  }
+
+  get position() {
+    return this._position;
   }
 
   get fov() {
@@ -32,9 +37,9 @@ class Player {
   initControlsListener() {
     document.addEventListener("keydown", (e) => {
       if (e.code === UP_ARROW) {
-        this.move(LevelMap.TILE_SIZE);
+        this.move(Level.TILE_SIZE);
       } else if (e.code === DOWN_ARROW) {
-        this.move(-LevelMap.TILE_SIZE);
+        this.move(-Level.TILE_SIZE);
       } else if (e.code === LEFT_ARROW) {
         this.rotate(-90);
       } else if (e.code === RIGHT_ARROW) {
@@ -67,7 +72,7 @@ class Player {
 
     let vectorsSum = Vector2D.sum(this._position, direction);
 
-    if (this._levelMap.hasWall(vectorsSum.x, vectorsSum.y)) return;
+    if (this._level.hasWall(vectorsSum.x, vectorsSum.y)) return;
 
     this._position.add(direction);
 
@@ -84,15 +89,10 @@ class Player {
 
     for (
       let i = 0, rayAngle = this._rotationAngle - this._fov / 2;
-      i < radiansToDegrees(this._fov);
-      i++, rayAngle += this._fov / radiansToDegrees(this._fov)
+      i < this._raysCount;
+      i++, rayAngle += this._fov / this._raysCount
     ) {
-      let ray = new Ray(
-        this._levelMap,
-        this._renderer,
-        this._position,
-        rayAngle
-      );
+      let ray = new Ray(this._renderer, this._level, this._position, rayAngle);
 
       ray.cast();
       ray.render(this._raysGroupEl);

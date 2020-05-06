@@ -1,19 +1,26 @@
 class Ray {
-  constructor(levelMap, renderer, position, angle) {
-    this._levelMap = levelMap;
+  constructor(renderer, level, position, angle) {
     this._renderer = renderer;
+    this._level = level;
     this._position = position;
     this._angle = normalizeAngle(angle);
     this._wallHitX = 0;
     this._wallHitY = 0;
     this._distance = 0;
-    this._wasHitVertical = false;
 
     this._isRayFacingDown = this._angle > 0 && this._angle < Math.PI;
     this._isRayFacingUp = !this._isRayFacingDown;
     this._isRayFacingRight =
       this._angle < 0.5 * Math.PI || this._angle > 1.5 * Math.PI;
     this._isRayFacingLeft = !this._isRayFacingRight;
+  }
+
+  get startPoint() {
+    return this._position;
+  }
+
+  get endPoint() {
+    return new Vector2D(this._wallHitX, this._wallHitY);
   }
 
   get angle() {
@@ -25,7 +32,7 @@ class Ray {
   }
 
   cast() {
-    let tileSize = LevelMap.TILE_SIZE;
+    let tileSize = Level.TILE_SIZE;
 
     let xIntercept;
     let yIntercept;
@@ -61,11 +68,11 @@ class Ray {
     // Trying to find a wall
     while (
       nextHorizontalTouchX >= 0 &&
-      nextHorizontalTouchX <= this._levelMap.width &&
+      nextHorizontalTouchX <= this._level.width &&
       nextHorizontalTouchY >= 0 &&
-      nextHorizontalTouchY <= this._levelMap.height
+      nextHorizontalTouchY <= this._level.height
     ) {
-      if (this._levelMap.hasWall(nextHorizontalTouchX, nextHorizontalTouchY)) {
+      if (this._level.hasWall(nextHorizontalTouchX, nextHorizontalTouchY)) {
         foundHorizontalWallHit = true;
         horizontalWallHitX = nextHorizontalTouchX;
         horizontalWallHitY = nextHorizontalTouchY;
@@ -106,11 +113,11 @@ class Ray {
     // Trying to find a wall
     while (
       nextVerticalTouchX >= 0 &&
-      nextVerticalTouchX <= this._levelMap.width &&
+      nextVerticalTouchX <= this._level.width &&
       nextVerticalTouchY >= 0 &&
-      nextVerticalTouchY <= this._levelMap.height
+      nextVerticalTouchY <= this._level.height
     ) {
-      if (this._levelMap.hasWall(nextVerticalTouchX, nextVerticalTouchY)) {
+      if (this._level.hasWall(nextVerticalTouchX, nextVerticalTouchY)) {
         foundVerticalWallHit = true;
         verticalWallHitX = nextVerticalTouchX;
         verticalWallHitY = nextVerticalTouchY;
@@ -143,7 +150,6 @@ class Ray {
         ? horizontalWallHitY
         : verticalWallHitY;
     this._distance = Math.min(horizontalHitDistance, verticalHitDistance);
-    this._wasHitVertical = verticalHitDistance < horizontalHitDistance;
   }
 
   render(parent = null) {
