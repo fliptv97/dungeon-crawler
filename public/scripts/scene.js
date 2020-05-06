@@ -8,7 +8,7 @@ class Scene {
     this._groupEl = null;
   }
 
-  render() {
+  _initGroup() {
     if (!this._groupEl) {
       this._groupEl = this._renderer.createElement(null, Renderer.TYPES.GROUP, {
         id: Scene.GROUP_NAME,
@@ -16,12 +16,13 @@ class Scene {
     } else {
       this._groupEl.innerHTML = "";
     }
+  }
 
-    // WALLS RENDERING
+  _getWallsToRender() {
     let area = this._renderer.width * this._renderer.height;
     let widthPerRay = this._renderer.width / this._level.player.rays.length;
 
-    this._level.player.rays.forEach((ray, i) => {
+    return this._level.player.rays.map((ray, i) => {
       let distance =
         ray.distance * Math.cos(ray.angle - this._level.player.rotationAngle);
       let distanceProjectionPlane =
@@ -30,17 +31,24 @@ class Scene {
         ((Level.TILE_SIZE - 10) / distance) * distanceProjectionPlane;
       let color = map(Math.pow(distance, 2), 0, area, 210, 0);
 
-      this._renderer.createElement(this._groupEl, Renderer.TYPES.RECTANGLE, {
-        x: i * widthPerRay,
-        y: (this._renderer.height - height) / 2,
-        width: widthPerRay + 1, // + 1 to fix line between
-        height: height,
-        style: `fill: rgb(${color}, ${color}, ${color});`,
-      });
+      return {
+        distance,
+        attrs: {
+          x: i * widthPerRay,
+          y: (this._renderer.height - height) / 2,
+          width: widthPerRay + 1, // + 1 to fix line between
+          height: height,
+          style: `fill: rgb(${color}, ${color}, ${color});`,
+          "data-distance": distance,
+        },
+      };
     });
+  }
 
-    // Checking if enemy visible
-    let enemiesToRender = this._level.enemies.filter((enemy) => {
+  _getEnemiesToRender() {
+    let area = this._renderer.width * this._renderer.height;
+
+    let visibleEnemies = this._level.enemies.filter((enemy) => {
       let enemyColliderBox = enemy.colliderBox;
 
       return this._level.player.rays.some((ray) =>
@@ -57,7 +65,7 @@ class Scene {
       );
     });
 
-    enemiesToRender.forEach((enemy) => {
+    return visibleEnemies.map((enemy) => {
       let distance = Vector2D.distance(
         this._level.player.position.x,
         this._level.player.position.y,
@@ -86,13 +94,36 @@ class Scene {
 
       let color = map(Math.pow(fixedDistance, 2), 0, area, 240, 0);
 
-      this._renderer.createElement(this._groupEl, Renderer.TYPES.RECTANGLE, {
-        x: x - height / 2,
-        y: (this._renderer.height - height) / 2,
-        width: height,
-        height: height,
-        style: `fill: rgb(0, 0, ${color})`,
-      });
+      return {
+        distance: fixedDistance,
+        attrs: {
+          x: x - height / 2,
+          y: (this._renderer.height - height) / 2,
+          width: height,
+          height: height,
+          style: `fill: rgb(0, 0, ${color})`,
+          "data-distance": fixedDistance,
+        },
+      };
     });
+  }
+
+  render() {
+    this._initGroup();
+
+    let wallsToRender = this._getWallsToRender();
+    let enemiesToRender = this._getEnemiesToRender();
+
+    let objectsToRender = [...wallsToRender, ...enemiesToRender];
+
+    objectsToRender
+      .sort((a, b) => b.distance - a.distance)
+      .forEach((obj) => {
+        this._renderer.createElement(
+          this._groupEl,
+          Renderer.TYPES.RECTANGLE,
+          obj.attrs
+        );
+      });
   }
 }

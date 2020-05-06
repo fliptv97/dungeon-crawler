@@ -4,7 +4,7 @@ const LEFT_ARROW = "ArrowLeft";
 const RIGHT_ARROW = "ArrowRight";
 
 class Player {
-  constructor(renderer, level, x, y, raysCount = 320, fov = 60) {
+  constructor(renderer, level, x, y, raysCount = 120, fov = 60) {
     this._renderer = renderer;
     this._level = level;
     this._position = new Vector2D(x, y);
