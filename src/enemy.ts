@@ -9,7 +9,6 @@ interface Box {
 }
 
 export class Enemy {
-  #el?: SVGElement;
   #renderer: Renderer;
   #position: Vector2D;
   #radius: number;
@@ -38,7 +37,7 @@ export class Enemy {
   }
 
   render() {
-    this.#el = this.#renderer.createElement(null, Renderer.ELEMENT_TYPES.CIRCLE, {
+    this.#renderer.createElement(null, Renderer.ELEMENT_TYPES.CIRCLE, {
       cx: this.#position.x,
       cy: this.#position.y,
       r: this.#radius,
