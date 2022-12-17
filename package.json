@@ -4,7 +4,9 @@
   "description": "First attempt to create dungeon crawler on JS",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "prepare": "husky install",
+    "lint": "eslint src/** --fix"
   },
   "author": "Philip Kazakov",
   "license": "MIT",
@@ -12,6 +14,11 @@
     "express": "^4.18.2"
   },
   "devDependencies": {
-    "prettier": "^2.8.1"
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
+    "eslint": "^8.30.0",
+    "husky": "^8.0.2",
+    "typescript": "^4.9.4",
+    "vite": "^4.0.1"
   }
 }
