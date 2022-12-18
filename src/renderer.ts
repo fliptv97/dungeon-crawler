@@ -1,16 +1,6 @@
 const NAMESPACE_URI = "http://www.w3.org/2000/svg";
 
-export type ElementType = typeof Renderer.ELEMENT_TYPES[keyof typeof Renderer.ELEMENT_TYPES];
-
 export class Renderer {
-  static ELEMENT_TYPES = {
-    SVG: "svg",
-    GROUP: "g",
-    RECTANGLE: "rect",
-    CIRCLE: "circle",
-    LINE: "line",
-  } as const;
-
   #width = 0;
   #height = 0;
   #container: SVGElement | null = null;
@@ -43,14 +33,14 @@ export class Renderer {
   init(width: number, height: number, id: string): void {
     this.#width = width;
     this.#height = height;
-    this.#container = this.createElement(document.body, "svg", {
+    this.#container = this.add(document.body, "svg", {
       id,
       width,
-      height,
+      height
     });
   }
 
-  createElement(parent: HTMLElement | SVGElement | null, type: ElementType, attrs = {}): SVGElement {
+  add(parent: HTMLElement | SVGElement | null, type: string, attrs = {}): SVGElement {
     const el = document.createElementNS(NAMESPACE_URI, type);
 
     for (const key in attrs) {

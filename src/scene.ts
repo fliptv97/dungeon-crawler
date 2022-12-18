@@ -1,12 +1,10 @@
-import { Level } from "./level";
-import { Renderer } from "./renderer";
-import { Vector2D } from "./vector2D";
-import { map, normalizeAngle, degreesToRadians } from "./helpers";
-import { collideLineRect } from "./collide2D";
+import { Level, TILE_SIZE } from "./Level";
+import { Renderer } from "./Renderer";
+import { normalizeAngle, degreesToRadians, map } from "./helpers";
+import { collideLineRect } from "./helpers/collisions";
+import { Line } from "./geometry/Line";
 
 export class Scene {
-  static GROUP_NAME = "scene" as const;
-
   #renderer: Renderer;
   #level: Level;
   #groupEl?: SVGElement;
@@ -18,8 +16,8 @@ export class Scene {
 
   #initGroup(): void {
     if (!this.#groupEl) {
-      this.#groupEl = this.#renderer.createElement(null, Renderer.ELEMENT_TYPES.GROUP, {
-        id: Scene.GROUP_NAME,
+      this.#groupEl = this.#renderer.add(null, "g", {
+        id: "scene",
       });
     } else {
       this.#groupEl.innerHTML = "";
@@ -28,21 +26,13 @@ export class Scene {
 
   #getWallsToRender() {
     const area = this.#renderer.width * this.#renderer.height;
-    const player = this.#level.player;
 
-    if (!player) {
-      throw new Error("Scene: There's no Player instance in Level");
-    }
+    const widthPerRay = this.#renderer.width / this.#level.player.rays.length;
 
-    const widthPerRay = this.#renderer.width / player.rays.length;
-
-    return player.rays.map((ray, i) => {
-      const distance =
-        ray.distance * Math.cos(ray.angle - player.rotationAngle);
-      const distanceProjectionPlane =
-        this.#renderer.width / 2 / Math.tan(player.fov / 2);
-      const height =
-        ((Level.TILE_SIZE - 10) / distance) * distanceProjectionPlane;
+    return this.#level.player.rays.map((ray, i) => {
+      const distance = ray.distance * Math.cos(ray.angle - this.#level.player.rotationAngle);
+      const distanceProjectionPlane = this.#renderer.width / 2 / Math.tan(this.#level.player.fov / 2);
+      const height = ((TILE_SIZE - 10) / distance) * distanceProjectionPlane;
       const color = map(Math.pow(distance, 2), 0, area, 210, 0);
 
       return {
@@ -61,55 +51,24 @@ export class Scene {
 
   #getEnemiesToRender() {
     const area = this.#renderer.width * this.#renderer.height;
-    const player = this.#level.player;
 
-    if (!player) {
-      throw new Error("Scene: There's no Player instance in Level");
-    }
-
-    const visibleEnemies = this.#level.enemies.filter((enemy) => {
-      const enemyColliderBox = enemy.colliderBox;
-
-      return player.rays.some((ray) =>
-        collideLineRect(
-          ray.startPoint.x,
-          ray.startPoint.y,
-          ray.endPoint.x,
-          ray.endPoint.y,
-          enemyColliderBox.x,
-          enemyColliderBox.y,
-          enemyColliderBox.width,
-          enemyColliderBox.height
-        )
-      );
-    });
+    const visibleEnemies = this.#level.enemies.filter((enemy) => (
+      this.#level.player.rays.some((ray) => (
+        collideLineRect(new Line(ray.startPoint, ray.endPoint), enemy.colliderBox)
+      ))
+    ));
 
     return visibleEnemies.map((enemy) => {
-      const distance = Vector2D.distance(
-        player.position.x,
-        player.position.y,
-        enemy.position.x,
-        enemy.position.y
-      );
-      let angle = Math.atan2(
-        enemy.position.y - player.position.y,
-        enemy.position.x - player.position.x
-      );
-
-      angle = normalizeAngle(angle) - player.rotationAngle;
+      const distance = this.#level.player.position.distance(enemy.position);
+      const angle = normalizeAngle(Math.atan2(
+        enemy.position.y - this.#level.player.position.y,
+        enemy.position.x - this.#level.player.position.x
+      )) - this.#level.player.rotationAngle;
 
       const fixedDistance = distance * Math.cos(angle);
-      const distanceProjectionPlane =
-        this.#renderer.width / 2 / Math.tan(player.fov / 2);
-      const height =
-        ((Level.TILE_SIZE - 10) / fixedDistance) * distanceProjectionPlane;
-      const x = map(
-        angle,
-        degreesToRadians(-30),
-        degreesToRadians(30),
-        0,
-        this.#renderer.width
-      );
+      const distanceProjectionPlane = this.#renderer.width / 2 / Math.tan(this.#level.player.fov / 2);
+      const height = ((TILE_SIZE - 10) / fixedDistance) * distanceProjectionPlane;
+      const x = map(angle, degreesToRadians(-30), degreesToRadians(30), 0, this.#renderer.width);
 
       const color = map(Math.pow(fixedDistance, 2), 0, area, 240, 0);
 
@@ -127,27 +86,22 @@ export class Scene {
     });
   }
 
-  render(): void | never {
+  render(): void {
     this.#initGroup();
+
+    // After this.#initGroup we sure, that we have this.#group field 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const groupEl = this.#groupEl!;
 
     const wallsToRender = this.#getWallsToRender();
     const enemiesToRender = this.#getEnemiesToRender();
 
     const objectsToRender = [...wallsToRender, ...enemiesToRender];
-    const groupEl = this.#groupEl;
-
-    if (!groupEl) {
-      throw new Error("Scene: There's no groupEl");
-    }
 
     objectsToRender
       .sort((a, b) => b.distance - a.distance)
       .forEach((obj) => {
-        this.#renderer.createElement(
-          groupEl,
-          Renderer.ELEMENT_TYPES.RECTANGLE,
-          obj.attrs
-        );
+        this.#renderer.add(groupEl, "rect", obj.attrs);
       });
   }
 }

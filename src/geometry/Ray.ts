@@ -1,7 +1,7 @@
-import { Level } from "./level";
-import { Renderer } from "./renderer";
-import { Vector2D } from "./vector2D";
-import { normalizeAngle } from "./helpers";
+import { Level, TILE_SIZE } from "../Level";
+import { Renderer } from "../Renderer";
+import { Vector2D } from "./Vector2D";
+import { normalizeAngle } from "../helpers/geometry";
 
 export class Ray {
   #renderer: Renderer;
@@ -49,8 +49,6 @@ export class Ray {
   }
 
   cast(): void {
-    const tileSize = Level.TILE_SIZE;
-
     let xIntercept;
     let yIntercept;
     let xStep;
@@ -62,18 +60,18 @@ export class Ray {
     let horizontalWallHitY = 0;
 
     // y-coordinate of the closest horizontal grid intersection
-    yIntercept = Math.floor(this.#position.y / tileSize) * tileSize;
-    yIntercept += this.#isRayFacingDown ? tileSize : 0;
+    yIntercept = Math.floor(this.#position.y / TILE_SIZE) * TILE_SIZE;
+    yIntercept += this.#isRayFacingDown ? TILE_SIZE : 0;
 
     // x-coordinate of the closest horizontal grid intersection
     xIntercept =
       this.#position.x +
       (yIntercept - this.#position.y) / Math.tan(this.#angle);
 
-    yStep = tileSize;
+    yStep = TILE_SIZE;
     yStep *= this.#isRayFacingUp ? -1 : 1;
 
-    xStep = tileSize / Math.tan(this.#angle);
+    xStep = TILE_SIZE / Math.tan(this.#angle);
     xStep *= this.#isRayFacingLeft && xStep > 0 ? -1 : 1;
     xStep *= this.#isRayFacingRight && xStep < 0 ? -1 : 1;
 
@@ -109,18 +107,18 @@ export class Ray {
     let verticalWallHitY = 0;
 
     // x-coordinate of the closest vertical grid intersection
-    xIntercept = Math.floor(this.#position.x / tileSize) * tileSize;
-    xIntercept += this.#isRayFacingRight ? tileSize : 0;
+    xIntercept = Math.floor(this.#position.x / TILE_SIZE) * TILE_SIZE;
+    xIntercept += this.#isRayFacingRight ? TILE_SIZE : 0;
 
     // y-coordinate of the closest vertical grid intersection
     yIntercept =
       this.#position.y +
       (xIntercept - this.#position.x) * Math.tan(this.#angle);
 
-    xStep = tileSize;
+    xStep = TILE_SIZE;
     xStep *= this.#isRayFacingLeft ? -1 : 1;
 
-    yStep = tileSize * Math.tan(this.#angle);
+    yStep = TILE_SIZE * Math.tan(this.#angle);
     yStep *= this.#isRayFacingUp && yStep > 0 ? -1 : 1;
     yStep *= this.#isRayFacingDown && yStep < 0 ? -1 : 1;
 
@@ -174,7 +172,7 @@ export class Ray {
   }
 
   render(parent: HTMLElement | SVGElement | null = null): SVGElement {
-    this.#el = this.#renderer.createElement(parent, Renderer.ELEMENT_TYPES.LINE, {
+    this.#el = this.#renderer.add(parent, "line", {
       x1: this.#position.x,
       y1: this.#position.y,
       x2: this.#wallHitX,

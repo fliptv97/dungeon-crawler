@@ -1,6 +1,6 @@
-import { Renderer } from "./renderer";
-import { Level } from "./level";
-import { Scene } from "./scene";
+import { Renderer } from "./Renderer";
+import { Level } from "./Level";
+import { Scene } from "./Scene";
 
 // MINIMAP
 const mapRenderer = new Renderer();
@@ -21,10 +21,6 @@ sceneRenderer.setBackgroundColor("#000");
 scene.render();
 
 // LISTENERS
-if (!level.player) {
-  throw new Error("Player isn't initialized");
-}
-
 level.player.initControlsListener();
 level.player.onUpdate(() => {
   scene.render();

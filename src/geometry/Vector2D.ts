@@ -3,19 +3,12 @@ export class Vector2D {
     return new Vector2D(Math.cos(angle), Math.sin(angle));
   }
 
-  static distance(x1: number, y1: number, x2: number, y2: number): number {
-    const v1 = new Vector2D(x1, y1);
-    const v2 = new Vector2D(x2, y2);
-
+  static distance(v1: Vector2D, v2: Vector2D): number {
     return v2.subtract(v1).getMagnitude();
   }
 
-  static sum(v1: Vector2D, v2: Vector2D): Vector2D | never {
-    if (v1 instanceof Vector2D && v2 instanceof Vector2D) {
-      return new Vector2D(v1.x + v2.x, v1.y + v2.y);
-    }
-
-    throw new Error("v1 or v2 isn't instance of Vector2D");
+  static sum(v1: Vector2D, v2: Vector2D): Vector2D {
+    return new Vector2D(v1.x + v2.x, v1.y + v2.y);
   }
 
   constructor(public x: number, public y: number) { }
